@@ -1,0 +1,13 @@
+{
+  "name": "codex-plugin-guide",
+  "version": "1.0.0",
+  "description": "OpenAI Codex Plugin for Claude Code - 실무 사용 가이드",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "render": "node tools/render_diagrams.mjs"
+  },
+  "dependencies": {
+    "beautiful-mermaid": "*"
+  }
+}
