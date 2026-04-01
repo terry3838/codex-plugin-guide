@@ -1,7 +1,10 @@
 # Upstream Snapshot — codex-plugin-cc
 
 - source repo: `https://github.com/openai/codex-plugin-cc.git`
-- synced commit: `8e403f9d4b496b0b0aff50fa3673f889f6a22cb1`
+- previous synced commit: `8e403f9d4b496b0b0aff50fa3673f889f6a22cb1`
+- current synced commit: `8e403f9d4b496b0b0aff50fa3673f889f6a22cb1`
+- sync mode: `no-change`
+- impact labels: 일반 변경
 - guide repo: `codex-plugin-guide`
 
 ## 원본 한줄 요약
@@ -19,6 +22,10 @@ Use Codex from inside Claude Code for code reviews or to delegate tasks to Codex
 - `README.md`
 - `tests/`
 - `tsconfig.app-server.json`
+
+## changed files
+
+- 변경 파일 없음
 
 ## README excerpt
 
@@ -102,4 +109,45 @@ One simple first run is:
 ### `/codex:review`
 
 Runs a normal Codex review on your current work. It gives you the same quality of code review as running `/review` inside Codex directly.
+
+> [!NOTE]
+> Code review especially for multi-file changes might take a while. It's generally recommended to run it in the background.
+
+Use it when you want:
+
+- a review of your current uncommitted changes
+- a review of your branch compared to a base branch like `main`
+
+Use `--base <ref>` for branch review. It also supports `--wait` and `--background`. It is not steerable and does not take custom focus text. Use [`/codex:adversarial-review`](#codexadversarial-review) when you want to challenge a specific decision or risk area.
+
+Examples:
+
+```bash
+/codex:review
+/codex:review --base main
+/codex:review --background
+```
+
+This command is read-only and will not perform any changes. When run in the background you can use [`/codex:status`](#codexstatus) to check on the progress and [`/codex:cancel`](#codexcancel) to cancel the ongoing task.
+
+### `/codex:adversarial-review`
+
+Runs a **steerable** review that questions the chosen implementation and design.
+
+It can be used to pressure-test assumptions, tradeoffs, failure modes, and whether a different approach would have been safer or simpler.
+
+It uses the same review target selection as `/codex:review`, including `--base <ref>` for branch review.
+It also supports `--wait` and `--background`. Unlike `/codex:review`, it can take extra focus text after the flags.
+
+Use it when you want:
+
+- a review before shipping that challenges the direction, not just the code details
+- review focused on design choices, tradeoffs, hidden assumptions, and alternative approaches
+- pressure-testing around specific risk areas like auth, data loss, rollback, race conditions, or reliability
+
+Examples:
+
+```bash
+/codex:adversarial-review
+/codex:adversarial-review --base main challenge whether this was the right caching and retry design
 ```
