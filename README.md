@@ -1,170 +1,184 @@
-# Codex Plugin for Claude Code -- 실무 사용 가이드
+# Codex Plugin for Claude Code 학습 가이드
 
-**Claude Code 사용자를 위한 OpenAI Codex 플러그인 실전 활용서**
+Codex Plugin for Claude Code는 단순히 Claude Code 안에서 Codex를 부르는 연결 장치가 아니다. 이 플러그인의 진짜 가치는 **Claude가 하던 흐름 속에 Codex용 lane을 끼워 넣는 것**에 있다.
 
----
+핵심 lane은 세 가지다.
 
-## 이 가이드는 무엇인가?
+- **review lane** — 현재 변경을 읽기 전용으로 검토
+- **challenge lane** — 설계 판단을 일부러 압박하며 검증
+- **delegate lane** — 조사/수정 작업 자체를 Codex에 넘김
 
-이 가이드는 [codex-plugin-cc](https://github.com/openai/codex-plugin-cc) 플러그인의 **실무 사용 가이드**입니다. 원본 README가 "이 플러그인이 무엇을 하는가"를 설명한다면, 이 가이드는 "실무에서 어떻게 사용하는가"를 다룹니다.
-
-Codex 플러그인은 Claude Code 안에서 OpenAI Codex를 호출하여 **코드 리뷰**와 **작업 위임**을 수행합니다. 이 가이드는 7개 명령어의 옵션, 실무 시나리오, 설정 방법, 그리고 효과적인 프롬프트 작성법까지 체계적으로 안내합니다.
-
----
-
-## 대상 독자
-
-- Claude Code를 사용 중이며 Codex CLI를 처음 접하는 개발자
-- 원본 README를 읽었지만 실무 적용이 막히는 사용자
-- 코드 리뷰 자동화와 작업 위임을 Claude Code 워크플로우에 통합하고 싶은 팀
+이 가이드는 원본 README의 명령 설명을 한국어로 반복하는 데서 멈추지 않고, **실무에서 언제 어떤 lane을 써야 하는지**가 보이도록 구조를 다시 세운다.
 
 ---
 
-## 요구사항
+## 현재 기준선
 
-| 항목 | 조건 |
-|------|------|
-| **인증** | ChatGPT subscription (Free 포함) 또는 OpenAI API key |
-| **런타임** | Node.js 18.18 이상 |
-| **환경** | Claude Code가 설치된 터미널 환경 |
+- upstream plugin repo: `codex-plugin-cc`
+- latest synced commit: `8e403f9d4b49`
+- 최근 upstream 신호:
+  - background task timing 안정화
+  - plugin version `1.0.2` 정렬
+  - PR workflow 추가
+  - `/codex:rescue` AskUserQuestion contract 수정
+  - Windows app-server spawn 호환성 보강
 
-> 사용량은 Codex 사용 한도에 포함됩니다. [요금 정책 확인](https://developers.openai.com/codex/pricing)
+즉 이 플러그인은 “명령 몇 개 추가한 편의 도구”가 아니라, **Claude Code ↔ Codex 사이의 실무 runtime bridge**로 읽는 편이 맞다.
 
 ---
 
-## 설치
+## 이 플러그인을 한 문장으로 말하면
 
-### 1단계: 마켓플레이스 추가 및 플러그인 설치
+**Claude Code 안에서 Codex를 리뷰어·도전자·작업 위임자 역할로 호출하게 해 주는 워크플로우 플러그인**이다.
+
+원본 README가 강조하는 것도 결국 이 세 축이다.
+
+- `/codex:review`
+- `/codex:adversarial-review`
+- `/codex:rescue` + `status/result/cancel`
+
+핵심은 Codex를 “추가 모델”처럼 쓰는 게 아니라, **역할이 다른 별도 작업 레인**으로 다루는 데 있다.
+
+---
+
+## 왜 이 가이드를 다시 봐야 하나
+
+### 1. 기존 frontdoor는 설치/명령 설명이 중심이었다
+
+그 자체로는 쓸 만했지만, 처음 읽는 사람은 여전히 이런 질문이 남는다.
+
+- 언제 `review`면 충분하고 언제 `adversarial-review`까지 가야 하나?
+- `rescue`는 단순한 서브에이전트 호출과 무엇이 다른가?
+- foreground / background를 어떤 기준으로 고르나?
+- Review Gate는 멋져 보이는데 실제로 언제 켜야 하나?
+
+즉 정보는 있었지만 **의사결정 순서**가 약했다.
+
+### 2. 이 플러그인의 진짜 가치 포인트는 lane 분리다
+
+이 플러그인을 잘 쓰는 사람은 명령어를 많이 아는 사람이 아니라, 상황별로 lane을 올바르게 고르는 사람이다.
+
+- 코드 변경을 빠르게 훑고 싶다 → `review`
+- 설계 판단을 공격적으로 검증하고 싶다 → `adversarial-review`
+- 조사/수정 자체를 넘기고 싶다 → `rescue`
+- 오래 걸리는 작업을 추적해야 한다 → `status/result/cancel`
+- Claude의 수정 턴마다 자동 안전망을 걸고 싶다 → Review Gate
+
+즉 문서의 중심도 명령 나열보다 **lane 선택 규칙**이 되어야 한다.
+
+### 3. 최근 upstream도 runtime 안정성 쪽을 강화하고 있다
+
+최근 커밋을 보면 관심사가 분명하다.
+
+- background timing flakiness 완화
+- AskUserQuestion contract 보정
+- Windows spawn portability 보강
+- CI/PR workflow 추가
+
+즉 이 플러그인은 설명문보다 **실제 실행 안정성**이 중요해지는 단계다.
+
+---
+
+## 빠른 시작: 가장 먼저 익혀야 할 3개 lane
+
+### 1) 리뷰 lane
 
 ```bash
-/plugin marketplace add openai/codex-plugin-cc
-/plugin install codex@openai-codex
-/reload-plugins
-```
-
-### 2단계: 설치 확인
-
-```bash
-/codex:setup
-```
-
-Codex CLI가 없으면 설치를 제안합니다. 직접 설치하려면:
-
-```bash
-npm install -g @openai/codex
-```
-
-### 3단계: 인증 (최초 1회)
-
-Codex가 설치되었지만 로그인되지 않은 경우:
-
-```bash
-!codex login
-```
-
-설치 후 `/agents`에서 `codex:codex-rescue` 서브에이전트가 보이면 정상입니다.
-
----
-
-## 명령어 요약
-
-| 명령어 | 설명 | 카테고리 |
-|--------|------|----------|
-| `/codex:review` | git 상태 기반 코드 리뷰 실행 | [코드 리뷰](categories/code-review.md) |
-| `/codex:adversarial-review` | 설계 판단에 도전하는 심층 리뷰 실행 | [코드 리뷰](categories/code-review.md) |
-| `/codex:rescue` | 조사/수정 작업을 Codex에 위임 | [작업 위임](categories/task-delegation.md) |
-| `/codex:status` | 실행 중/완료된 Codex 작업 상태 확인 | [운영](categories/operations.md) |
-| `/codex:result` | 완료된 작업의 최종 결과 조회 | [운영](categories/operations.md) |
-| `/codex:cancel` | 실행 중인 백그라운드 작업 취소 | [운영](categories/operations.md) |
-| `/codex:setup` | Codex CLI 상태 확인 및 Review Gate 설정 | [운영](categories/operations.md) |
-
----
-
-## 빠른 시작: 5분 안에 첫 리뷰
-
-코드를 변경한 상태에서 다음을 실행합니다:
-
-```bash
-# 1. 현재 변경사항을 Codex에게 리뷰 요청 (백그라운드)
 /codex:review --background
-
-# 2. 진행 상태 확인
 /codex:status
-
-# 3. 완료 후 결과 읽기
 /codex:result
 ```
 
-이것이 가장 기본적인 워크플로우입니다. 더 다양한 실무 시나리오는 [01-usage-scenarios.md](01-usage-scenarios.md)를 참고하세요.
+언제 쓰나:
+- 커밋 전 셀프 리뷰
+- 변경이 여러 파일에 걸쳐 있을 때
+- Claude가 작성한 패치를 한 번 더 읽기 전용으로 검토하고 싶을 때
+
+### 2) 챌린지 lane
+
+```bash
+/codex:adversarial-review --base main 인증과 롤백 설계가 충분히 안전한지 검토해줘
+```
+
+언제 쓰나:
+- 중요한 설계 결정 전
+- 배포 직전 리스크 검증
+- 일반 리뷰로는 놓치기 쉬운 트레이드오프를 흔들어 보고 싶을 때
+
+### 3) 위임 lane
+
+```bash
+/codex:rescue --background flaky integration test의 원인을 조사하고 가장 작은 안전한 수정안을 제시해줘
+/codex:status
+/codex:result
+```
+
+언제 쓰나:
+- 원인 조사 자체를 넘기고 싶을 때
+- Claude가 막혔을 때
+- 장시간 작업을 백그라운드로 돌리고 싶을 때
 
 ---
 
-## 전체 아키텍처
+## 전체 구조를 어떻게 이해하면 좋은가
 
 ```mermaid
 graph TD
-  Claude["Claude Code"] -->|"/codex:review\n/codex:adversarial-review\n/codex:rescue"| Companion["codex-companion.mjs<br/>(Runtime)"]
-  Companion -->|"review"| CodexReview["Codex<br/>Code Review"]
-  Companion -->|"task"| CodexTask["Codex<br/>Task Execution"]
-  Companion -->|"status/result/cancel"| JobControl["Job Control<br/>(tracked-jobs.mjs)"]
-  Hooks["Hooks<br/>(SessionStart/Stop)"] -->|"review gate"| Companion
-  Config[".codex/config.toml"] -->|"model/effort"| Companion
+  Claude[Claude Code] --> Review[/codex:review]
+  Claude --> Adversarial[/codex:adversarial-review]
+  Claude --> Rescue[/codex:rescue]
+  Review --> Companion[codex-companion runtime]
+  Adversarial --> Companion
+  Rescue --> Companion
+  Companion --> Codex[Codex CLI / app server]
+  Companion --> Jobs[tracked jobs]
+  Jobs --> Status[/codex:status]
+  Jobs --> Result[/codex:result]
+  Jobs --> Cancel[/codex:cancel]
+  Hooks[hooks + review gate] --> Companion
 ```
 
-**구성 요소 설명**:
+이 구조에서 중요한 건 하나다.
 
-- **Claude Code**: 사용자가 슬래시 명령어를 입력하는 진입점
-- **codex-companion.mjs**: 모든 명령어를 처리하는 플러그인 런타임 코어. review, task, status, result, cancel 등 하위 명령을 라우팅
-- **Codex Code Review**: `review` 및 `adversarial-review` 명령의 실행 엔진
-- **Codex Task Execution**: `rescue` 명령으로 위임된 작업의 실행 엔진
-- **Job Control (tracked-jobs.mjs)**: 백그라운드 작업의 상태 추적 및 관리
-- **Hooks**: SessionStart/SessionEnd/Stop 훅을 통한 라이프사이클 관리 및 Review Gate 트리거
-- **config.toml**: 모델, effort 수준 등 런타임 설정
+- Claude Code는 사용자-facing 진입점
+- Codex는 실제 리뷰/위임 실행 엔진
+- 플러그인은 그 사이에서 **명령을 lane으로 정리하고 상태를 추적하는 bridge** 역할을 한다
 
 ---
 
-## 카테고리별 상세 문서
+## 추천 읽기 순서
 
-| 카테고리 | 포함 명령어 | 문서 |
-|----------|------------|------|
-| **코드 리뷰** | `review`, `adversarial-review`, Review Gate | [categories/code-review.md](categories/code-review.md) |
-| **작업 위임** | `rescue`, `codex-rescue` 에이전트, 모델/effort 설정 | [categories/task-delegation.md](categories/task-delegation.md) |
-| **운영** | `setup`, `status`, `result`, `cancel`, config.toml, 훅 시스템 | [categories/operations.md](categories/operations.md) |
-
----
-
-## 설정 요약
-
-플러그인은 Codex CLI의 표준 설정 파일을 그대로 사용합니다.
-
-| 위치 | 용도 |
-|------|------|
-| `~/.codex/config.toml` | 사용자 전역 설정 |
-| `.codex/config.toml` | 프로젝트별 설정 (우선 적용) |
-
-```toml
-# 프로젝트별 설정 예시: .codex/config.toml
-model = "gpt-5.4-mini"
-model_reasoning_effort = "high"
-```
-
-자세한 설정 옵션은 [categories/operations.md](categories/operations.md)를 참고하세요.
+1. `sections/01-overview.md` — 이 플러그인이 실제로 무엇인지
+2. `01-learning-paths.md` — 어떤 순서로 써야 하는지
+3. `01-usage-scenarios.md` — 대표 실무 플로우
+4. `categories/code-review.md` — review / adversarial / review gate
+5. `categories/task-delegation.md` — rescue와 thread/모델/effort
+6. `categories/operations.md` — setup / status / result / cancel / hook
+7. `02-glossary.md` — 헷갈리는 용어 정리
 
 ---
 
-## 추가 자료
+## 흔한 오해
 
-- [실무 시나리오 가이드](01-usage-scenarios.md) -- 5개 실전 워크플로우
-- [용어 사전](02-glossary.md) -- 플러그인 고유 개념 정의
-- [원본 플러그인 저장소](https://github.com/openai/codex-plugin-cc)
-- [Codex CLI 문서](https://developers.openai.com/codex/cli/)
-- [Codex 설정 레퍼런스](https://developers.openai.com/codex/config-reference)
+### 오해 1 — `/codex:review`가 있으면 `/codex:adversarial-review`는 덜 중요하다
+
+아니다. 둘은 엄격도 차이가 아니라 **관점 차이**다.
+
+### 오해 2 — `/codex:rescue`는 그냥 길게 실행되는 Codex 호출일 뿐이다
+
+아니다. rescue는 thread, resume/fresh, model/effort, background job tracking까지 포함한 **작업 위임 lane**이다.
+
+### 오해 3 — Review Gate는 항상 켜 두는 게 좋다
+
+아니다. 강력하지만 루프와 사용량 오버헤드가 있다. 중요한 세션에서만 의도적으로 켜는 편이 맞다.
 
 ---
 
-## 라이선스
+## 다음 문서
 
-Apache-2.0 -- 원본 플러그인과 동일한 라이선스를 따릅니다.
+- lane 구조를 먼저 잡으려면 `sections/01-overview.md`
+- 대표 실무 흐름은 `01-usage-scenarios.md`
+- 리뷰/위임/운영 세부는 `categories/` 문서들
 
 <!-- GUIDE_SYNC:START -->
 ## 자동 동기화 상태

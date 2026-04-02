@@ -1,31 +1,185 @@
 # 용어 사전
 
-이 문서는 Codex 플러그인에서 사용하는 고유 개념과 혼동하기 쉬운 용어를 정리합니다.
+이 문서는 Codex Plugin for Claude Code를 이해할 때 자주 헷갈리는 개념을 **lane / runtime / 작업 관리** 기준으로 다시 정리한다.
 
 ---
 
-## 플러그인 고유 개념
+## A
 
-| 용어 | 설명 |
-|------|------|
-| **Review Gate** | Claude Code의 Stop 훅에 연결된 자동 리뷰 메커니즘. Claude Code가 코드를 수정하면 Codex가 해당 변경을 자동 리뷰하고, ALLOW(통과) 또는 BLOCK(차단) 판정을 내린다. `/codex:setup --enable-review-gate`로 활성화한다. |
-| **Rescue Thread** | `/codex:rescue`로 시작된 Codex 작업 스레드. 하나의 rescue thread는 연속적인 조사/수정 맥락을 유지하며, `--resume-last`로 이전 스레드를 이어갈 수 있다. |
-| **Adversarial Review** | 일반 리뷰와 달리 구현의 정당성을 의도적으로 도전(adversarial stance)하는 리뷰 방식. 코드 결함이 아니라 설계 판단, 숨은 가정, 트레이드오프를 지적한다. |
-| **Codex Companion** | `codex-companion.mjs` 스크립트. 플러그인의 모든 명령어를 처리하는 런타임 코어로, review, task, status, result, cancel 등의 하위 명령을 Codex CLI로 라우팅한다. |
-| **App Server** | Codex가 제공하는 로컬 서버 프로토콜. 플러그인은 이 프로토콜을 통해 Codex CLI와 통신한다. [Codex App Server 문서](https://developers.openai.com/codex/app-server/) 참고. |
-| **Effort Level** | Codex의 추론 깊이를 조절하는 설정. `none`, `minimal`, `low`, `medium`, `high`, `xhigh` 중 선택한다. 높을수록 깊이 분석하지만 시간과 비용이 증가한다. |
-| **Background Execution** | `--background` 플래그로 실행하는 비동기 방식. Codex 작업이 백그라운드에서 진행되며, `/codex:status`로 상태를 확인하고 `/codex:result`로 결과를 조회한다. |
-| **Foreground Execution** | `--wait` 플래그 또는 기본 동작으로 실행하는 동기 방식. 작업이 끝날 때까지 Claude Code가 결과를 기다린다. |
-| **Resume vs Fresh** | `--resume`(또는 `--resume-last`)는 이전 Codex rescue thread를 이어서 작업한다. `--fresh`는 새 스레드를 시작한다. 둘 다 지정하지 않으면 이전 스레드가 있을 때 선택을 묻는다. |
-| **Scope** | 리뷰 대상 범위. `working-tree`는 커밋하지 않은 변경사항, `branch`는 `--base <ref>`로 지정한 브랜치와의 diff를 대상으로 한다. `auto`는 상황에 따라 자동 선택한다. |
-| **ALLOW / BLOCK 판정** | Review Gate의 결과. ALLOW는 "문제 없음, 계속 진행", BLOCK은 "문제 발견, 수정 필요"를 의미한다. 코드 변경이 없는 턴은 항상 ALLOW를 반환한다. |
+### Adversarial Review
+
+**정의:** 구현이 “돌아가는가”를 넘어서, **그 접근 자체가 옳은지**를 공격적으로 검증하는 리뷰 방식.
+
+일반 리뷰와의 차이는 엄격도보다 관점에 있다.
+
+- `review` → 구현 결함 중심
+- `adversarial-review` → 설계 판단, 트레이드오프, 숨은 가정 중심
 
 ---
 
-## 혼동하기 쉬운 개념
+## B
 
-| 비교 | 설명 |
-|------|------|
-| **`/codex:rescue` vs `codex-rescue` 에이전트** | `/codex:rescue`는 사용자가 직접 호출하는 슬래시 명령어다. `codex-rescue`는 Claude Code의 서브에이전트로, Claude Code가 막혔을 때 **자동으로** Codex에 작업을 위임하는 역할을 한다. `/codex:rescue`를 실행하면 내부적으로 `codex-rescue` 에이전트를 경유하여 `codex-companion.mjs task`를 호출한다. |
-| **`--wait` vs `--background`** | `--wait`은 동기 실행으로, 결과가 나올 때까지 대기한다. `--background`는 비동기 실행으로, 작업을 백그라운드에 띄우고 즉시 돌아온다. 플래그를 지정하지 않으면 review는 크기에 따라 추천하고, rescue는 foreground가 기본이다. |
-| **Model Alias** | `--model spark`이라고 입력하면 내부적으로 `gpt-5.3-codex-spark`으로 매핑된다. `gpt-5.4-mini` 같은 정식 모델명은 그대로 전달된다. 모델을 지정하지 않으면 Codex의 기본값 또는 config.toml 설정을 따른다. |
+### Background Execution
+
+**정의:** Codex 작업을 백그라운드로 실행하고, Claude Code 흐름을 바로 돌려받는 방식.
+
+이 플러그인에서 background는 선택 옵션이 아니라 **긴 작업을 다루는 기본 운영 패턴**이다. 이후에는 `/codex:status`, `/codex:result`, `/codex:cancel`이 함께 따라온다.
+
+---
+
+## C
+
+### Codex Companion
+
+**정의:** 플러그인의 런타임 코어. review, task, status, result, cancel 같은 하위 기능을 Codex 쪽 실행 경로로 라우팅한다.
+
+이 개념을 이해하면 플러그인을 명령어 모음이 아니라 **runtime bridge**로 보기 쉬워진다.
+
+### Challenge Lane
+
+**정의:** `/codex:adversarial-review`를 중심으로, 설계 판단을 압박하고 반론을 수집하는 작업 흐름.
+
+배포 전 검증이나 고위험 변경 검토에서 특히 중요하다.
+
+---
+
+## D
+
+### Delegate Lane
+
+**정의:** `/codex:rescue`로 대표되는 작업 위임 흐름.
+
+단순 호출이 아니라 다음을 함께 포함한다.
+
+- 새 thread 시작 또는 기존 thread 이어가기
+- model/effort 조절
+- foreground/background 선택
+- 결과와 후속 작업 추적
+
+---
+
+## E
+
+### Effort Level
+
+**정의:** Codex가 문제를 얼마나 깊게 파고들지 정하는 추론 깊이 설정.
+
+일반적으로:
+- 낮은 effort → 빠른 triage, 작은 수정
+- 높은 effort → 복잡한 조사, 다단계 분석
+
+이 값은 “좋다/나쁘다”가 아니라 **작업 크기와 비용 사이의 trade-off**다.
+
+---
+
+## F
+
+### Foreground Execution
+
+**정의:** 작업이 끝날 때까지 현재 흐름에서 결과를 기다리는 방식.
+
+짧은 리뷰나 빠른 확인에는 좋지만, 긴 rescue나 멀티파일 리뷰는 background가 더 자연스럽다.
+
+---
+
+## L
+
+### Lane
+
+**정의:** 이 가이드가 플러그인 명령을 이해하는 기본 단위.
+
+권장 lane 구분은 다음 네 가지다.
+
+- **review lane** — `/codex:review`
+- **challenge lane** — `/codex:adversarial-review`
+- **delegate lane** — `/codex:rescue`
+- **operate lane** — `setup`, `status`, `result`, `cancel`
+
+명령어를 낱개로 외우는 대신 lane으로 기억하면 실제 사용 판단이 쉬워진다.
+
+---
+
+## O
+
+### Operate Lane
+
+**정의:** Codex 작업을 설치·확인·추적·취소하는 운영 흐름.
+
+핵심 명령:
+- `/codex:setup`
+- `/codex:status`
+- `/codex:result`
+- `/codex:cancel`
+
+이 lane은 화려하진 않지만, background 작업을 실무에서 굴리려면 가장 중요하다.
+
+---
+
+## R
+
+### Rescue Thread
+
+**정의:** `/codex:rescue`로 시작된 Codex 작업 맥락.
+
+이 thread 개념이 있기 때문에:
+- 이전 조사 결과를 이어서 쓰는 `--resume`
+- 새 시도로 분기하는 `--fresh`
+
+같은 선택이 의미를 가진다.
+
+### Review Gate
+
+**정의:** Claude Code가 코드를 수정한 뒤 자동으로 Codex 리뷰를 돌려, 문제가 있으면 진행을 막는 안전망.
+
+강력하지만 비용이 있다.
+
+- 장점: 자동 품질 안전망
+- 단점: 장기 루프, 속도 저하, 사용량 증가
+
+즉 기본값으로 항상 켜는 기능이 아니라, **중요 세션에서 의도적으로 켜는 자동화 옵션**으로 보는 편이 맞다.
+
+### Review Lane
+
+**정의:** `/codex:review`를 중심으로, 현재 변경을 읽기 전용으로 검토하는 흐름.
+
+가장 먼저 익혀야 하는 lane이며, 커밋 전 셀프 리뷰에 가장 잘 맞는다.
+
+---
+
+## S
+
+### Scope
+
+**정의:** Codex가 어떤 변경 범위를 대상으로 볼지 정하는 기준.
+
+예:
+- 현재 워킹트리 변경
+- 특정 base ref 대비 branch diff
+- 자동 선택
+
+좋은 리뷰 품질은 종종 좋은 scope 선택에서 시작한다.
+
+### Spark Model Alias
+
+**정의:** `spark` 같은 짧은 입력을 실제 Codex 모델 이름으로 매핑하는 별칭.
+
+빠른 탐색이나 값싼 패스가 필요할 때 유용하지만, 깊은 조사에는 더 강한 모델/effort 조합이 나을 수 있다.
+
+### Status / Result / Cancel
+
+**정의:** background Codex 작업의 상태 확인, 결과 조회, 취소를 담당하는 작업 관리 명령 묶음.
+
+이 세 개를 이해하지 못하면 background lane은 사실상 반쪽짜리다.
+
+---
+
+## W
+
+### Wait vs Background
+
+**정의:** 현재 자리에서 끝까지 기다릴지, 작업을 뒤로 돌리고 나중에 확인할지를 고르는 실행 모드 선택.
+
+판단 기준은 단순하다.
+
+- 짧고 작은 작업 → `--wait`
+- 오래 걸리거나 병행이 필요한 작업 → `--background`
