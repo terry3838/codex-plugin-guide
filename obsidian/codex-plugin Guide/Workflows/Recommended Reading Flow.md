@@ -9,10 +9,11 @@
 2. [[02 Learning Paths]]
 3. [[03 Glossary]]
 4. [[Deep Dives/Usage scenarios]]
-5. [[Categories/Code review]]
-6. [[Categories/Operations]]
-7. [[01 Overview]]
-8. [[Categories/Task delegation]]
+5. [[01 Overview]]
+6. [[Categories/Code review]]
+7. [[Categories/Operations]]
+8. [[Categories/Overview]]
+9. [[Categories/Task delegation]]
 
 ## 이유
 

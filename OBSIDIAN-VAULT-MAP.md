@@ -24,9 +24,10 @@
 | `01-learning-paths.md` | `codex-plugin Guide/02 Learning Paths.md` |
 | `02-glossary.md` | `codex-plugin Guide/03 Glossary.md` |
 | `01-usage-scenarios.md` | `codex-plugin Guide/Deep Dives/Usage scenarios.md` |
+| `sections/01-overview.md` | `codex-plugin Guide/01 Overview.md` |
 | `categories/code-review.md` | `codex-plugin Guide/Categories/Code review.md` |
 | `categories/operations.md` | `codex-plugin Guide/Categories/Operations.md` |
-| `categories/overview.md` | `codex-plugin Guide/01 Overview.md` |
+| `categories/overview.md` | `codex-plugin Guide/Categories/Overview.md` |
 | `categories/task-delegation.md` | `codex-plugin Guide/Categories/Task delegation.md` |
 
 ## note map 의도

@@ -13,6 +13,7 @@
 - `02-glossary.md`
 - `README.md`
 - `categories`
+- `sections`
 
 ## Repo → note mapping
 
@@ -22,9 +23,10 @@
 | `01-learning-paths.md` | `02 Learning Paths.md` |
 | `02-glossary.md` | `03 Glossary.md` |
 | `01-usage-scenarios.md` | `Deep Dives/Usage scenarios.md` |
+| `sections/01-overview.md` | `01 Overview.md` |
 | `categories/code-review.md` | `Categories/Code review.md` |
 | `categories/operations.md` | `Categories/Operations.md` |
-| `categories/overview.md` | `01 Overview.md` |
+| `categories/overview.md` | `Categories/Overview.md` |
 | `categories/task-delegation.md` | `Categories/Task delegation.md` |
 
 ## Operating rule
