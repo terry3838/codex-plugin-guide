@@ -9,7 +9,7 @@
 
 ## Why this note matters
 
-- repo: codex-plugin-cc - source: https://github.com/openai/codex-plugin-cc.git - latest synced commit: 8e403f9d4b49 - summary: Use Codex from inside Claude Code for code reviews or to delegate tasks to Codex.
+- repo: codex-plugin-cc - source: https://github.com/openai/codex-plugin-cc.git - latest synced commit: 594fd1e8da9b - summary: Use Codex from inside Claude Code for code reviews or to delegate tasks to Codex.
 
 ## Source-adapted content
 
@@ -19,23 +19,18 @@
 
 - repo: `codex-plugin-cc`
 - source: `https://github.com/openai/codex-plugin-cc.git`
-- latest synced commit: `8e403f9d4b49`
+- latest synced commit: `594fd1e8da9b`
 - summary: Use Codex from inside Claude Code for code reviews or to delegate tasks to Codex.
 
 ## 이번 싸이클 판단
 
-- sync mode: `no-change`
-- impact labels: 일반 변경
-- 판단: 이번 싸이클에서는 origin 변경이 없어 guide 본문은 유지했고, 동기화 기준점만 재확인했습니다.
+- sync mode: `update`
+- impact labels: 스킬/플러그인, 테스트/검증
+- 판단: origin 변경 파일을 기준으로 guide 문서의 관련 섹션을 다시 읽고 반영했습니다. 핵심 영향 영역: 스킬/플러그인, 테스트/검증.
 
 ## 최근 upstream 커밋
 
-- `8e403f9 tests: reduce background task timing flakiness (#37)`
-- `6360899 chore: bump plugin version to 1.0.2 (#74)`
-- `65486f2 ci: add pull request workflow for tests and build (#73)`
-- `64dc174 Fix /codex:rescue AskUserQuestion contract (#43)`
-- `a126634 fix: make test suite portable across platforms (#56)`
-- `1a79ae5 fix: resolve Windows ENOENT when spawning codex app-server (#55)`
+- `594fd1e Fix working-tree review crash on untracked directories (#166)`
 
 ## 확인한 원본 구조
 
@@ -58,4 +53,5 @@
 
 ## 변경 파일 샘플
 
-- 변경 파일 없음
+- `plugins/codex/scripts/lib/git.mjs`
+- `tests/git.test.mjs`
