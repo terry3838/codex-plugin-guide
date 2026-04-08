@@ -2,9 +2,9 @@
 
 - source repo: `https://github.com/openai/codex-plugin-cc.git`
 - previous synced commit: `8e403f9d4b496b0b0aff50fa3673f889f6a22cb1`
-- current synced commit: `8e403f9d4b496b0b0aff50fa3673f889f6a22cb1`
-- sync mode: `no-change`
-- impact labels: 일반 변경
+- current synced commit: `594fd1e8da9befb42ab0a1fcf151e2b8d655e7ce`
+- sync mode: `update`
+- impact labels: 스킬/플러그인, 테스트/검증
 - guide repo: `codex-plugin-guide`
 
 ## 원본 한줄 요약
@@ -13,14 +13,7 @@ Use Codex from inside Claude Code for code reviews or to delegate tasks to Codex
 
 ## recent upstream commits
 
-- `8e403f9 tests: reduce background task timing flakiness (#37)`
-- `6360899 chore: bump plugin version to 1.0.2 (#74)`
-- `65486f2 ci: add pull request workflow for tests and build (#73)`
-- `64dc174 Fix /codex:rescue AskUserQuestion contract (#43)`
-- `a126634 fix: make test suite portable across platforms (#56)`
-- `1a79ae5 fix: resolve Windows ENOENT when spawning codex app-server (#55)`
-- `19642ad tests: derive repo roots from test file locations (#34)`
-- `9cb4fe4 Bump v1.0.1 (#22)`
+- `594fd1e Fix working-tree review crash on untracked directories (#166)`
 
 ## top-level structure
 
@@ -36,7 +29,8 @@ Use Codex from inside Claude Code for code reviews or to delegate tasks to Codex
 
 ## changed files
 
-- 변경 파일 없음
+- `plugins/codex/scripts/lib/git.mjs`
+- `tests/git.test.mjs`
 
 ## README excerpt
 

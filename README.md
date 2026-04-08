@@ -184,26 +184,22 @@ graph TD
 ## 자동 동기화 상태
 
 - origin repo: `codex-plugin-cc`
-- latest source commit: `8e403f9d4b49`
-- sync mode: `no-change`
-- 영향 분류: 일반 변경
+- latest source commit: `594fd1e8da9b`
+- sync mode: `update`
+- 영향 분류: 스킬/플러그인, 테스트/검증
 
 ### 이번 반영 포인트
 
-이번 싸이클에서는 origin 변경이 없어 guide 본문은 유지했고, 동기화 기준점만 재확인했습니다.
+origin 변경 파일을 기준으로 guide 문서의 관련 섹션을 다시 읽고 반영했습니다. 핵심 영향 영역: 스킬/플러그인, 테스트/검증.
 
 ### 최근 upstream 커밋
 
-- `8e403f9 tests: reduce background task timing flakiness (#37)`
-- `6360899 chore: bump plugin version to 1.0.2 (#74)`
-- `65486f2 ci: add pull request workflow for tests and build (#73)`
-- `64dc174 Fix /codex:rescue AskUserQuestion contract (#43)`
-- `a126634 fix: make test suite portable across platforms (#56)`
-- `1a79ae5 fix: resolve Windows ENOENT when spawning codex app-server (#55)`
+- `594fd1e Fix working-tree review crash on untracked directories (#166)`
 
 ### 변경 파일 샘플
 
-- 이번 싸이클에서는 신규 변경 파일이 없습니다.
+- `plugins/codex/scripts/lib/git.mjs`
+- `tests/git.test.mjs`
 
 > 이 블록은 guide sync가 자동 갱신합니다.
 <!-- GUIDE_SYNC:END -->
