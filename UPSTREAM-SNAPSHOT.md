@@ -1,10 +1,10 @@
 # Upstream Snapshot — codex-plugin-cc
 
 - source repo: `https://github.com/openai/codex-plugin-cc.git`
-- previous synced commit: `8e403f9d4b496b0b0aff50fa3673f889f6a22cb1`
-- current synced commit: `594fd1e8da9befb42ab0a1fcf151e2b8d655e7ce`
+- previous synced commit: `594fd1e8da9befb42ab0a1fcf151e2b8d655e7ce`
+- current synced commit: `6a5c2ba53b734f3cdd8daacbd49f68f3e6c8c167`
 - sync mode: `update`
-- impact labels: 스킬/플러그인, 테스트/검증
+- impact labels: README/소개, 스킬/플러그인, 테스트/검증
 - guide repo: `codex-plugin-guide`
 
 ## 원본 한줄 요약
@@ -13,7 +13,14 @@ Use Codex from inside Claude Code for code reviews or to delegate tasks to Codex
 
 ## recent upstream commits
 
-- `594fd1e Fix working-tree review crash on untracked directories (#166)`
+- `6a5c2ba fix: quote \$ARGUMENTS in cancel, result, and status commands (#168)`
+- `8e9a38c fix: correct invalid 'xhigh' reasoning effort in README (#99)`
+- `b115623 fix: declare model in codex-rescue agent frontmatter (#169)`
+- `c24afe8 codex: honor --cwd when reporting session runtime (#35)`
+- `11a720b bump: update plugin version to 1.0.3 (#180)`
+- `bc8fa66 fix: avoid embedding large adversarial review diffs (#179)`
+- `d216a5f codex: scope default cancel selection to the current Claude session (#84)`
+- `40d213d codex: scope implicit resume-last selection to the current Claude session (#83)`
 
 ## top-level structure
 
@@ -24,13 +31,32 @@ Use Codex from inside Claude Code for code reviews or to delegate tasks to Codex
 - `package.json`
 - `plugins/`
 - `README.md`
+- `scripts/`
 - `tests/`
 - `tsconfig.app-server.json`
 
 ## changed files
 
+- `.claude-plugin/marketplace.json`
+- `README.md`
+- `package-lock.json`
+- `package.json`
+- `plugins/codex/.claude-plugin/plugin.json`
+- `plugins/codex/agents/codex-rescue.md`
+- `plugins/codex/commands/cancel.md`
+- `plugins/codex/commands/result.md`
+- `plugins/codex/commands/status.md`
+- `plugins/codex/prompts/adversarial-review.md`
+- `plugins/codex/scripts/codex-companion.mjs`
+- `plugins/codex/scripts/lib/app-server-protocol.d.ts`
+- `plugins/codex/scripts/lib/app-server.mjs`
+- `plugins/codex/scripts/lib/codex.mjs`
 - `plugins/codex/scripts/lib/git.mjs`
-- `tests/git.test.mjs`
+- `plugins/codex/scripts/lib/job-control.mjs`
+- `plugins/codex/scripts/lib/process.mjs`
+- `plugins/codex/scripts/stop-review-gate-hook.mjs`
+- `scripts/bump-version.mjs`
+- `tests/bump-version.test.mjs`
 
 ## README excerpt
 
