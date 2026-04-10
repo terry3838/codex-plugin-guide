@@ -9,9 +9,9 @@
 
 ## 이번 싸이클 판단
 
-- sync mode: `update`
-- impact labels: README/소개, 스킬/플러그인, 테스트/검증
-- 판단: origin 변경 파일을 기준으로 guide 문서의 관련 섹션을 다시 읽고 반영했습니다. 핵심 영향 영역: README/소개, 스킬/플러그인, 테스트/검증.
+- sync mode: `no-change`
+- impact labels: 일반 변경
+- 판단: 이번 싸이클에서는 origin 변경이 없어 guide 본문은 유지했고, 동기화 기준점만 재확인했습니다.
 
 ## 최근 upstream 커밋
 
@@ -44,23 +44,4 @@
 
 ## 변경 파일 샘플
 
-- `.claude-plugin/marketplace.json`
-- `README.md`
-- `package-lock.json`
-- `package.json`
-- `plugins/codex/.claude-plugin/plugin.json`
-- `plugins/codex/agents/codex-rescue.md`
-- `plugins/codex/commands/cancel.md`
-- `plugins/codex/commands/result.md`
-- `plugins/codex/commands/status.md`
-- `plugins/codex/prompts/adversarial-review.md`
-- `plugins/codex/scripts/codex-companion.mjs`
-- `plugins/codex/scripts/lib/app-server-protocol.d.ts`
-- `plugins/codex/scripts/lib/app-server.mjs`
-- `plugins/codex/scripts/lib/codex.mjs`
-- `plugins/codex/scripts/lib/git.mjs`
-- `plugins/codex/scripts/lib/job-control.mjs`
-- `plugins/codex/scripts/lib/process.mjs`
-- `plugins/codex/scripts/stop-review-gate-hook.mjs`
-- `scripts/bump-version.mjs`
-- `tests/bump-version.test.mjs`
+- 변경 파일 없음

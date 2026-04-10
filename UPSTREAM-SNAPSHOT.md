@@ -1,10 +1,10 @@
 # Upstream Snapshot — codex-plugin-cc
 
 - source repo: `https://github.com/openai/codex-plugin-cc.git`
-- previous synced commit: `594fd1e8da9befb42ab0a1fcf151e2b8d655e7ce`
+- previous synced commit: `6a5c2ba53b734f3cdd8daacbd49f68f3e6c8c167`
 - current synced commit: `6a5c2ba53b734f3cdd8daacbd49f68f3e6c8c167`
-- sync mode: `update`
-- impact labels: README/소개, 스킬/플러그인, 테스트/검증
+- sync mode: `no-change`
+- impact labels: 일반 변경
 - guide repo: `codex-plugin-guide`
 
 ## 원본 한줄 요약
@@ -37,26 +37,7 @@ Use Codex from inside Claude Code for code reviews or to delegate tasks to Codex
 
 ## changed files
 
-- `.claude-plugin/marketplace.json`
-- `README.md`
-- `package-lock.json`
-- `package.json`
-- `plugins/codex/.claude-plugin/plugin.json`
-- `plugins/codex/agents/codex-rescue.md`
-- `plugins/codex/commands/cancel.md`
-- `plugins/codex/commands/result.md`
-- `plugins/codex/commands/status.md`
-- `plugins/codex/prompts/adversarial-review.md`
-- `plugins/codex/scripts/codex-companion.mjs`
-- `plugins/codex/scripts/lib/app-server-protocol.d.ts`
-- `plugins/codex/scripts/lib/app-server.mjs`
-- `plugins/codex/scripts/lib/codex.mjs`
-- `plugins/codex/scripts/lib/git.mjs`
-- `plugins/codex/scripts/lib/job-control.mjs`
-- `plugins/codex/scripts/lib/process.mjs`
-- `plugins/codex/scripts/stop-review-gate-hook.mjs`
-- `scripts/bump-version.mjs`
-- `tests/bump-version.test.mjs`
+- 변경 파일 없음
 
 ## README excerpt
 
