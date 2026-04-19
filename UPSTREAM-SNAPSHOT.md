@@ -2,9 +2,9 @@
 
 - source repo: `https://github.com/openai/codex-plugin-cc.git`
 - previous synced commit: `6a5c2ba53b734f3cdd8daacbd49f68f3e6c8c167`
-- current synced commit: `6a5c2ba53b734f3cdd8daacbd49f68f3e6c8c167`
-- sync mode: `no-change`
-- impact labels: 일반 변경
+- current synced commit: `807e03ac9d5aa23bc395fdec8c3767500a86b3cf`
+- sync mode: `update`
+- impact labels: 스킬/플러그인, 테스트/검증
 - guide repo: `codex-plugin-guide`
 
 ## 원본 한줄 요약
@@ -13,14 +13,8 @@ Use Codex from inside Claude Code for code reviews or to delegate tasks to Codex
 
 ## recent upstream commits
 
-- `6a5c2ba fix: quote \$ARGUMENTS in cancel, result, and status commands (#168)`
-- `8e9a38c fix: correct invalid 'xhigh' reasoning effort in README (#99)`
-- `b115623 fix: declare model in codex-rescue agent frontmatter (#169)`
-- `c24afe8 codex: honor --cwd when reporting session runtime (#35)`
-- `11a720b bump: update plugin version to 1.0.3 (#180)`
-- `bc8fa66 fix: avoid embedding large adversarial review diffs (#179)`
-- `d216a5f codex: scope default cancel selection to the current Claude session (#84)`
-- `40d213d codex: scope implicit resume-last selection to the current Claude session (#83)`
+- `807e03a fix: bump plugin version to 1.0.4 (#244)`
+- `bb38412 fix: route /codex:rescue through the Agent tool to stop Skill recursion (#234) (#235)`
 
 ## top-level structure
 
@@ -37,7 +31,12 @@ Use Codex from inside Claude Code for code reviews or to delegate tasks to Codex
 
 ## changed files
 
-- 변경 파일 없음
+- `.claude-plugin/marketplace.json`
+- `package-lock.json`
+- `package.json`
+- `plugins/codex/.claude-plugin/plugin.json`
+- `plugins/codex/commands/rescue.md`
+- `tests/commands.test.mjs`
 
 ## README excerpt
 
